@@ -35,12 +35,17 @@ android {
 
 dependencies {
     def room_version = "2.5.1"
+    def lifecycle_version = "2.6.1"
 
     // Room database dependencies
     implementation "androidx.room:room-runtime:$room_version"
     implementation "androidx.room:room-ktx:$room_version"
     annotationProcessor "androidx.room:room-compiler:$room_version"
     kapt "androidx.room:room-compiler:$room_version"
+
+    // Lifecycle dependencies
+    // Lifecycles only (without ViewModel or LiveData)
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version"
 
     // Other dependencies
     implementation 'androidx.core:core-ktx:1.10.1'
