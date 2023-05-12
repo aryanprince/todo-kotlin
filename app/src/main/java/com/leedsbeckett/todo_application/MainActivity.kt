@@ -6,12 +6,14 @@ import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ListView
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
 
     private lateinit var editTextTask: EditText
     private lateinit var buttonAddTask: Button
@@ -19,7 +21,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var taskList: ArrayList<Task>
     private lateinit var taskDao: TaskDao
 
-    //     @OptIn(DelicateCoroutinesApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -32,7 +33,7 @@ class MainActivity : AppCompatActivity() {
         taskDao = taskDatabase.taskDao()
 
         // Restore the task list from the database
-        GlobalScope.launch {
+        launch {
             taskList = ArrayList(taskDao.getAllTasks())
             withContext(Dispatchers.Main) {
                 updateTaskList()
@@ -45,7 +46,7 @@ class MainActivity : AppCompatActivity() {
                 val newTask = Task(name = taskName)
 
                 // Actually adding the new task to database
-                GlobalScope.launch {
+                launch {
                     taskDao.insertTask(newTask)
                     taskList.add(newTask)
                     withContext(Dispatchers.Main) {
@@ -61,5 +62,10 @@ class MainActivity : AppCompatActivity() {
         val adapter =
             ArrayAdapter(this, android.R.layout.simple_list_item_1, taskList.map { it.name })
         taskListView.adapter = adapter
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        cancel()
     }
 }
