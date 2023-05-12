@@ -15,6 +15,10 @@ class MainActivity : AppCompatActivity() {
 
     private var taskList = ArrayList<String>()
 
+    companion object {
+        private const val TASK_LIST_KEY = "task_list"
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -22,6 +26,10 @@ class MainActivity : AppCompatActivity() {
         editTextTask = findViewById(R.id.editTextTask)
         buttonAddTask = findViewById(R.id.buttonAddTask)
         taskListView = findViewById(R.id.listViewTasks)
+
+        // Check if bundle has any saved tasks, if yes add them to the array
+        taskList = savedInstanceState?.getStringArrayList(TASK_LIST_KEY) ?: ArrayList()
+        updateTaskList()
 
         buttonAddTask.setOnClickListener {
             val task = editTextTask.text.toString()
@@ -36,5 +44,11 @@ class MainActivity : AppCompatActivity() {
     private fun updateTaskList() {
         val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, taskList)
         taskListView.adapter = adapter
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+
+        outState.putStringArrayList(TASK_LIST_KEY, taskList)
     }
 }
