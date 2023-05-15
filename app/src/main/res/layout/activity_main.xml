@@ -6,32 +6,44 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <LinearLayout
-        android:layout_width="match_parent"
+
+    <Button
+        android:id="@+id/btnAddTodo"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_gravity="center"
+        android:text="Add Task"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/etTodo"
+        app:layout_constraintTop_toTopOf="parent" />
 
-        <Button
-            android:id="@+id/buttonAddTask"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="Add Task" />
+    <EditText
+        android:id="@+id/etTodo"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="Enter a task"
+        android:imeOptions="actionDone"
+        android:inputType="text"
+        app:layout_constraintEnd_toStartOf="@+id/btnAddTodo"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-        <EditText
-            android:id="@+id/editTextTask"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Enter a task"
-            android:imeOptions="actionDone"
-            android:inputType="text" />
+    <ListView
+        android:id="@+id/lvTodos"
+        android:layout_width="match_parent"
+        android:layout_height="281dp"
+        android:layout_below="@id/etTodo"
+        app:layout_constraintTop_toBottomOf="@+id/etTodo"
+        tools:layout_editor_absoluteX="-120dp" />
 
-        <ListView
-            android:id="@+id/listViewTasks"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/editTextTask" />
-    </LinearLayout>
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvTodos"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/lvTodos" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

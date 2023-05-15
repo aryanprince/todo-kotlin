@@ -25,9 +25,9 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        editTextTask = findViewById(R.id.editTextTask)
-        buttonAddTask = findViewById(R.id.buttonAddTask)
-        taskListView = findViewById(R.id.listViewTasks)
+        editTextTask = findViewById(R.id.etTodo)
+        buttonAddTask = findViewById(R.id.btnAddTodo)
+        taskListView = findViewById(R.id.lvTodos)
 
         val taskDatabase = TaskDatabase.getDatabase(this)
         taskDao = taskDatabase.taskDao()
