@@ -1,6 +1,5 @@
 package com.leedsbeckett.todo_application
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,9 +7,9 @@ import android.widget.CheckBox
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-class TodoAdapter(
+class TaskAdapter(
     private var tasks: List<Task>
-) : RecyclerView.Adapter<TodoAdapter.TodoViewHolder>() {
+) : RecyclerView.Adapter<TaskAdapter.TodoViewHolder>() {
 
     class TodoViewHolder(val itemView: View) : RecyclerView.ViewHolder(itemView) {
         val tvTitle: TextView = itemView.findViewById(R.id.tvTitle)

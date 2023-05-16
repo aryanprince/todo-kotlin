@@ -2,12 +2,8 @@ package com.leedsbeckett.todo_application
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.ArrayAdapter
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ListView
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import com.leedsbeckett.todo_application.databinding.ActivityMainBinding
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
@@ -17,65 +13,48 @@ import kotlinx.coroutines.withContext
 
 class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
 
-    private lateinit var editTextTask: EditText
-    private lateinit var buttonAddTask: Button
-    private lateinit var taskListView: ListView
-    private lateinit var taskList: ArrayList<Task>
+    private lateinit var binding: ActivityMainBinding
+    private lateinit var taskAdapter: TaskAdapter
     private lateinit var taskDao: TaskDao
-
-    private lateinit var adapter: TodoAdapter
-    private lateinit var rvTodos: RecyclerView
+    private lateinit var tasks: ArrayList<Task>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        editTextTask = findViewById(R.id.etTodo)
-        buttonAddTask = findViewById(R.id.btnAddTodo)
-        taskListView = findViewById(R.id.lvTodos)
-        rvTodos = findViewById(R.id.rvTodos)
-
-        val taskDatabase = TaskDatabase.getDatabase(this)
-        taskDao = taskDatabase.taskDao()
+        taskDao = TaskDatabase.getDatabase(this).taskDao()
 
         // Restore the task list from the database
-        launch {
-            taskList = ArrayList(taskDao.getAllTasks())
-            withContext(Dispatchers.Main) {
-                updateTaskList()
-                setupRecyclerView()
-            }
+        launch { fetchTasksFromDatabase() }
+
+        binding.btnAddTodo.setOnClickListener { addNewTask() }
+    }
+
+    private suspend fun fetchTasksFromDatabase() {
+        tasks = ArrayList(taskDao.getAllTasks())
+        withContext(Dispatchers.Main) {
+            taskAdapter = TaskAdapter(tasks)
+            binding.rvTodos.adapter = taskAdapter
+            binding.rvTodos.layoutManager = LinearLayoutManager(this@MainActivity)
         }
+    }
 
-        buttonAddTask.setOnClickListener {
-            val taskName = editTextTask.text.toString()
-            if (taskName.isNotEmpty()) {
-                val newTask = Task(name = taskName)
+    private fun addNewTask() {
+        val taskName = binding.etTodo.text.toString()
+        if (taskName.isNotEmpty()) {
+            val newTask = Task(name = taskName)
 
-                // Actually adding the new task to database
-                launch {
-                    taskDao.insertTask(newTask)
-                    taskList.add(newTask)
-                    withContext(Dispatchers.Main) {
-                        updateTaskList()
-                        adapter.notifyItemInserted(taskList.size - 1)
-                    }
+            // Actually adding the new task to database
+            launch {
+                taskDao.insertTask(newTask)
+                tasks.add(newTask)
+                withContext(Dispatchers.Main) {
+                    taskAdapter.notifyItemInserted(tasks.size - 1)
                 }
-                editTextTask.text.clear()
             }
+            binding.etTodo.text.clear()
         }
-    }
-
-    private fun updateTaskList() {
-        val adapter =
-            ArrayAdapter(this, android.R.layout.simple_list_item_1, taskList.map { it.name })
-        taskListView.adapter = adapter
-    }
-
-    private fun setupRecyclerView() {
-        adapter = TodoAdapter(taskList)
-        rvTodos.adapter = adapter
-        rvTodos.layoutManager = LinearLayoutManager(this)
     }
 
     override fun onDestroy() {
